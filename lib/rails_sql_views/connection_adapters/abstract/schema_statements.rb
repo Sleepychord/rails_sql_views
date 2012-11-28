@@ -29,6 +29,15 @@ module RailsSqlViews
           create_sql << " WITH #{options[:check_option]} CHECK OPTION" if options[:check_option]
           execute create_sql
         end
+
+        if options[:primary_key]
+          create_primary_key_for_view name, options[:primary_key]
+        end
+      end
+
+      def create_primary_key_for_view(name, primary_key)
+        sql = "ALTER VIEW #{quote_table_name(name)} ADD CONSTRAINT #{quote_table_name(name)}_pk PRIMARY KEY(#{primary_key}) DISABLE"
+        execute sql
       end
 
       # Also creates a view, with the specific purpose of remapping column names
