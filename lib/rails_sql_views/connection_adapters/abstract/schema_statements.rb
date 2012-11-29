@@ -36,7 +36,7 @@ module RailsSqlViews
       end
 
       def create_primary_key_for_view(name, primary_key)
-        sql = "ALTER VIEW #{quote_table_name(name)} ADD CONSTRAINT #{quote_table_name(name)}_pk PRIMARY KEY(#{primary_key}) DISABLE"
+        sql = "ALTER VIEW #{quote_table_name(name)} ADD CONSTRAINT #{quote_table_name(name + "_pk")} PRIMARY KEY(#{primary_key}) DISABLE"
         execute sql
       end
 
