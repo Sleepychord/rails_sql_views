@@ -3,15 +3,17 @@
 # Instead, edit Jeweler::Tasks in Rakefile, and run 'rake gemspec'
 # -*- encoding: utf-8 -*-
 
+require "rails_sql_views/version"
+
 Gem::Specification.new do |s|
-  s.name = "ctreatma-rails_sql_views"
-  s.version = "0.9.1"
+  s.name = "pmacs-rails_sql_views"
+  s.version = RailsSqlViews::VERSION::STRING 
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Charles Treatman", "Anthony Eden"]
+  s.authors = ["Charles Treatman", "Anthony Eden", "Greg Barendt", "Raj Iyengar"]
   s.date = "2012-04-12"
   s.description = "Adds support for using SQL views within ActiveRecord"
-  s.email = "charles.treatman@gmail.com"
+  s.email = ["barendt@mail.med.upenn.edu", "rgi@mail.med.upenn.edu"]
   s.extra_rdoc_files = [
     "LICENSE",
     "README",
@@ -23,7 +25,7 @@ Gem::Specification.new do |s|
     "Rakefile",
     "lib/active_record/view.rb",
     "lib/core_ext/module.rb",
-    "lib/ctreatma-rails_sql_views.rb",
+    "lib/pmacs-rails_sql_views.rb",
     "lib/rails_sql_views/connection_adapters/abstract/schema_definitions.rb",
     "lib/rails_sql_views/connection_adapters/abstract/schema_statements.rb",
     "lib/rails_sql_views/connection_adapters/abstract_adapter.rb",
@@ -40,7 +42,7 @@ Gem::Specification.new do |s|
     "lib/rails_sql_views/schema_dumper.rb",
     "lib/rails_sql_views/version.rb"
   ]
-  s.homepage = "http://github.com/ctreatma/rails_sql_views"
+  s.homepage = "http://github.com/pmacs/rails_sql_views"
   s.require_paths = ["lib"]
   s.rubygems_version = "1.8.21"
   s.summary = "Library which adds SQL Views to ActiveRecord."
