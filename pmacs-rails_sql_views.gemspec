@@ -3,15 +3,13 @@
 # Instead, edit Jeweler::Tasks in Rakefile, and run 'rake gemspec'
 # -*- encoding: utf-8 -*-
 
-require "rails_sql_views/version"
-
 Gem::Specification.new do |s|
   s.name = "pmacs-rails_sql_views"
-  s.version = RailsSqlViews::VERSION::STRING 
+  s.version = "0.9.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Charles Treatman", "Anthony Eden", "Greg Barendt", "Raj Iyengar"]
-  s.date = "2012-04-12"
+  s.date = "2013-09-20"
   s.description = "Adds support for using SQL views within ActiveRecord"
   s.email = ["barendt@mail.med.upenn.edu", "rgi@mail.med.upenn.edu"]
   s.extra_rdoc_files = [
@@ -44,7 +42,7 @@ Gem::Specification.new do |s|
   ]
   s.homepage = "http://github.com/pmacs/rails_sql_views"
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.21"
+  s.rubygems_version = "1.8.24"
   s.summary = "Library which adds SQL Views to ActiveRecord."
 
   if s.respond_to? :specification_version then

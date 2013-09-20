@@ -1,8 +1,8 @@
 require 'rake'
 require 'rake/testtask'
-require 'rake/rdoctask'
+require 'rdoc/task'
 require 'rake/packagetask'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 
 require File.join(File.dirname(__FILE__), 'lib/rails_sql_views', 'version')
 
@@ -50,12 +50,12 @@ end
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
-    s.name = "ctreatma-rails_sql_views"
+    s.name = "pmacs-rails_sql_views"
     s.summary = "Library which adds SQL Views to ActiveRecord."
-    s.email = "charles.treatman@gmail.com"
-    s.homepage = "http://github.com/ctreatma/rails_sql_views"
+    s.email = ["barendt@mail.med.upenn.edu","rgi@mail.med.upenn.edu"]
+    s.homepage = "http://github.com/pmacs/rails_sql_views"
     s.description = "Adds support for using SQL views within ActiveRecord"
-    s.authors = ["Charles Treatman", "Anthony Eden"]
+    s.authors = ["Charles Treatman", "Anthony Eden", "Greg Barendt", "Raj Iyengar"]
     s.files =  FileList[
       "CHANGELOG", 
       "README",
