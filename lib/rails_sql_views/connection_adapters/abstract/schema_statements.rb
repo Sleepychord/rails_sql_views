@@ -85,6 +85,13 @@ module RailsSqlViews
         execute view_sql
       end
       
+      # Drop a materialized view
+      def drop_materialized_view(name)
+        return unless supports_materialized_views?
+
+        execute "DROP MATERIALIZED VIEW #{quote_table_name(name)}"
+      end
+
       # Drop a view.
       # The +options+ hash can include the following keys:
       # [<tt>:drop_behavior</tt>]
