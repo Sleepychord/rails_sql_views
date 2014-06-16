@@ -6,6 +6,11 @@ module RailsSqlViews
       end
 
       # Subclasses should override and return true if they support views.
+      def supports_materialized_views?
+        return false
+      end
+
+      # Subclasses should override and return true if they support views.
       def supports_views?
         return false
       end

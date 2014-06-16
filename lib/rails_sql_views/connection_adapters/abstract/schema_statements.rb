@@ -1,6 +1,28 @@
 module RailsSqlViews
   module ConnectionAdapters # :nodoc:
     module SchemaStatements
+
+      # Create a materialized view
+      def create_materialized_view(name, select_query, options={})
+        return unless supports_materialized_views?
+
+        view_definition = ViewDefinition.new(self, select_query)
+
+        if block_given?
+          yield view_definition
+        end
+
+        create_sql = "CREATE MATERIALIZED VIEW #{quote_table_name(name)} "
+        create_sql << 'PCTFREE 0 PCTUSED 0 COMPRESS FOR OLTP NOLOGGING REFRESH COMPLETE ON DEMAND '
+        create_sql << "AS #{view_definition.select_query}"
+        create_sql << " WITH #{options[:check_option]} CHECK OPTION" if options[:check_option]
+        execute create_sql
+
+        if options[:primary_key]
+          create_primary_key_for_view name, options[:primary_key]
+        end
+      end
+
       # Create a view.
       # The +options+ hash can include the following keys:
       # [<tt>:check_option</tt>]
@@ -63,6 +85,13 @@ module RailsSqlViews
         execute view_sql
       end
       
+      # Drop a materialized view
+      def drop_materialized_view(name)
+        return unless supports_materialized_views?
+
+        execute "DROP MATERIALIZED VIEW #{quote_table_name(name)}"
+      end
+
       # Drop a view.
       # The +options+ hash can include the following keys:
       # [<tt>:drop_behavior</tt>]

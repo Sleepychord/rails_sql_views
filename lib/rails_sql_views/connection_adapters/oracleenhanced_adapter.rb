@@ -1,6 +1,10 @@
 module RailsSqlViews
   module ConnectionAdapters
     module OracleEnhancedAdapter
+      def supports_materialized_views?
+        true
+      end
+
       # Returns true as this adapter supports views.
       def supports_views?
         true
