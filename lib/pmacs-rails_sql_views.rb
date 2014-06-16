@@ -32,6 +32,7 @@ require 'rails_sql_views/connection_adapters/abstract/schema_statements'
 require 'rails_sql_views/connection_adapters/abstract_adapter'
 require 'rails_sql_views/schema_dumper'
 require 'rails_sql_views/loader'
+require 'rails_sql_views/migration/command_recorder'
 
 ActiveRecord::ConnectionAdapters::AbstractAdapter.class_eval do
   include RailsSqlViews::ConnectionAdapters::SchemaStatements
@@ -45,3 +46,4 @@ ActiveRecord::SchemaDumper.class_eval do
 end
 
 RailsSqlViews::Loader.load_extensions
+ActiveRecord::Migration::CommandRecorder.send(:include, RailsSqlViews::Migration::CommandRecorder)
