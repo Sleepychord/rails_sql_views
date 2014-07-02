@@ -76,27 +76,28 @@ module RailsSqlViews
       # Refresh schedule string must follow oracle repeat_interval syntax:
       # http://www.oracle-base.com/articles/10g/scheduler-10g.php#configuring_the_scheduler
       def create_mv_refresh_job(name, refresh_schedule)
-        job_action = "BEGIN
-          DBMS_MVIEW.REFRESH ( #{quote_table_name(name)}, 'C');
+        schema = current_schema
+        job_action = %Q[BEGIN
+          DBMS_MVIEW.REFRESH ('#{schema}.#{name.upcase}', 'C');
           EXCEPTION
           WHEN OTHERS THEN
             mail.send_mail(
-               from_s => #{quote_table_name(name)},
+               from_s => '#{schema}',
                to_r => 'SOMPROG@LISTS.UPENN.EDU',
                subject => 'MV refreshing failed',
                message => SQLCODE || SUBSTR(SQLERRM, 1, 100));
-          END;"
+          END;]
       
-        job = "BEGIN DBMS_SCHEDULER.CREATE_JOB (
-                    job_name => #{quote_table_name(name)} || '_refresh',
+        job = %Q[BEGIN DBMS_SCHEDULER.CREATE_JOB (
+                    job_name => '#{schema}.#{name.upcase}_refresh',
                     job_type => 'plsql_block',
-                    job_action => #{job_action}, 
-                    repeat_interval => #{refresh_schedule},
+                    job_action => q'[#{job_action}]', 
+                    repeat_interval => '#{refresh_schedule}',
                     enabled => true,
                     auto_drop => false,
                     comments => 'Refresh #{quote_table_name(name)} against source.'
                     );
-                  END;"      
+                  END;]      
                   
         execute job
       end
@@ -135,8 +136,9 @@ module RailsSqlViews
       # Drops a scheduled job. Catches job does not exist exception as it is run when dropping
       # a materialized view, which may not have a scheduled job.
       def drop_mv_refresh_job(name)
+        schema = current_schema
         begin
-          execute "BEGIN DBMS_SCHEDULER.DROP_JOB (#{quote_table_name(name)} || '_refresh'); END;"
+          execute "BEGIN DBMS_SCHEDULER.DROP_JOB ('#{schema}.#{name.upcase}_refresh'); END;"
         rescue => exception
           case exception.to_s
           when /ORA-27475/ # Job does not exist
