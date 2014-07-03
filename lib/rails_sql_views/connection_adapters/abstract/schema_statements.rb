@@ -95,7 +95,7 @@ module RailsSqlViews
                     repeat_interval => '#{refresh_schedule}',
                     enabled => true,
                     auto_drop => false,
-                    comments => 'Refresh #{quote_table_name(name)} against source.'
+                    comments => 'Refresh #{schema}.#{name.upcase} against source.'
                     );
                   END;]      
                   
