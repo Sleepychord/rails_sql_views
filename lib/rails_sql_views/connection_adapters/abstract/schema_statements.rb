@@ -25,7 +25,7 @@ module RailsSqlViews
         execute create_sql
 
         if options[:primary_key]
-          create_primary_key_for_view name, options[:primary_key]
+          create_primary_key_for_mv name, options[:primary_key]
         end
         
         if options[:refresh_schedule]
@@ -68,10 +68,18 @@ module RailsSqlViews
       end
 
       def create_primary_key_for_view(name, primary_key)
-        sql = "ALTER VIEW #{quote_table_name(name)} ADD CONSTRAINT #{quote_table_name(name + "_pk")} PRIMARY KEY(#{primary_key}) DISABLE"
-        execute sql
+        create_primary_key(name, primary_key, 'VIEW')
       end
       
+      def create_primary_key_for_mv(name, primary_key)
+        create_primary_key(name, primary_key, 'MATERIALIZED VIEW')
+      end
+      
+      def create_primary_key(name, primary_key, type)
+        sql = "ALTER #{type} #{quote_table_name(name)} ADD CONSTRAINT #{quote_table_name(name + "_pk")} PRIMARY KEY(#{primary_key}) DISABLE"
+        execute sql
+      end
+
       # Schedule a job to refresh given materialized view. 
       # Refresh schedule string must follow oracle repeat_interval syntax:
       # http://www.oracle-base.com/articles/10g/scheduler-10g.php#configuring_the_scheduler
