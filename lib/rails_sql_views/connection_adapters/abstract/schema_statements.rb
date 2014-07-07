@@ -3,7 +3,13 @@ module RailsSqlViews
     module SchemaStatements
 
       # Create a materialized view
-      def create_materialized_view(name, select_query, options={})
+      # The +options+ hash can include the following keys:
+      # [<tt>:check_option</tt>]
+      # [<tt>:primary_key</tt>]
+      # [<tt>:refresh_schedule</tt>]
+      #   If refresh schedule is given, job is scheduled to refresh the materialized view
+      #   and email SOMPROG with any refresh errors
+     def create_materialized_view(name, select_query, options={})
         return unless supports_materialized_views?
 
         view_definition = ViewDefinition.new(self, select_query)
@@ -19,7 +25,11 @@ module RailsSqlViews
         execute create_sql
 
         if options[:primary_key]
-          create_primary_key_for_view name, options[:primary_key]
+          create_primary_key_for_mv name, options[:primary_key]
+        end
+        
+        if options[:refresh_schedule]
+          create_mv_refresh_job name, options[:refresh_schedule]
         end
       end
 
@@ -58,8 +68,46 @@ module RailsSqlViews
       end
 
       def create_primary_key_for_view(name, primary_key)
-        sql = "ALTER VIEW #{quote_table_name(name)} ADD CONSTRAINT #{quote_table_name(name + "_pk")} PRIMARY KEY(#{primary_key}) DISABLE"
+        create_primary_key(name, primary_key, 'VIEW')
+      end
+      
+      def create_primary_key_for_mv(name, primary_key)
+        create_primary_key(name, primary_key, 'MATERIALIZED VIEW')
+      end
+      
+      def create_primary_key(name, primary_key, type)
+        sql = "ALTER #{type} #{quote_table_name(name)} ADD CONSTRAINT #{quote_table_name(name + "_pk")} PRIMARY KEY(#{primary_key}) DISABLE"
         execute sql
+      end
+
+      # Schedule a job to refresh given materialized view. 
+      # Refresh schedule string must follow oracle repeat_interval syntax:
+      # http://www.oracle-base.com/articles/10g/scheduler-10g.php#configuring_the_scheduler
+      def create_mv_refresh_job(name, refresh_schedule)
+        schema = current_schema
+        job_action = %Q[BEGIN
+          DBMS_MVIEW.REFRESH ('#{schema}.#{name.upcase}', 'C');
+          EXCEPTION
+          WHEN OTHERS THEN
+            mail.send_mail(
+               from_s => '#{schema}',
+               to_r => 'SOMPROG@LISTS.UPENN.EDU',
+               subject => 'MV refreshing failed',
+               message => SQLCODE || SUBSTR(SQLERRM, 1, 100));
+          END;]
+      
+        job = %Q[BEGIN DBMS_SCHEDULER.CREATE_JOB (
+                    job_name => '#{schema}.#{name.upcase}_refresh',
+                    job_type => 'plsql_block',
+                    job_action => q'[#{job_action}]', 
+                    repeat_interval => '#{refresh_schedule}',
+                    enabled => true,
+                    auto_drop => false,
+                    comments => 'Refresh #{schema}.#{name.upcase} against source.'
+                    );
+                  END;]      
+                  
+        execute job
       end
 
       # Also creates a view, with the specific purpose of remapping column names
@@ -89,7 +137,24 @@ module RailsSqlViews
       def drop_materialized_view(name)
         return unless supports_materialized_views?
 
+        drop_mv_refresh_job(name)
         execute "DROP MATERIALIZED VIEW #{quote_table_name(name)}"
+      end
+      
+      # Drops a scheduled job. Catches job does not exist exception as it is run when dropping
+      # a materialized view, which may not have a scheduled job.
+      def drop_mv_refresh_job(name)
+        schema = current_schema
+        begin
+          execute "BEGIN DBMS_SCHEDULER.DROP_JOB ('#{schema}.#{name.upcase}_refresh'); END;"
+        rescue => exception
+          case exception.to_s
+          when /ORA-27475/ # Job does not exist
+            return true
+          else
+            raise
+          end
+        end
       end
 
       # Drop a view.
