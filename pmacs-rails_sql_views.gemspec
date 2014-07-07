@@ -5,13 +5,13 @@
 
 Gem::Specification.new do |s|
   s.name = "pmacs-rails_sql_views"
-  s.version = "0.9.2"
+  s.version = "0.9.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Charles Treatman", "Anthony Eden", "Greg Barendt", "Raj Iyengar"]
+  s.authors = ["Charles Treatman", "Anthony Eden", "Greg Barendt", "Raj Iyengar", "Elika Molayi"]
   s.date = "2013-09-20"
   s.description = "Adds support for using SQL views within ActiveRecord"
-  s.email = ["barendt@mail.med.upenn.edu", "rgi@mail.med.upenn.edu"]
+  s.email = ["barendt@mail.med.upenn.edu", "rgi@mail.med.upenn.edu", "emolayi@mail.med.upenn.edu"]
   s.extra_rdoc_files = [
     "LICENSE",
     "README",
