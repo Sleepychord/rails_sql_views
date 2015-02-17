@@ -64,10 +64,10 @@ module RailsSqlViews
           create_sql << "AS #{view_definition.select_query}"
           create_sql << " WITH #{options[:check_option]} CHECK OPTION" if options[:check_option]
           execute create_sql
-        end
 
-        if options[:primary_key]
-          create_primary_key_for_view name, options[:primary_key]
+          if options[:primary_key]
+            create_primary_key_for_view name, options[:primary_key]
+          end
         end
       end
       
@@ -96,10 +96,10 @@ module RailsSqlViews
           create_sql << "AS #{view_definition.select_query}"
           create_sql << " WITH #{options[:check_option]} CHECK OPTION" if options[:check_option]
           execute create_sql
-        end
-
-        if options[:primary_key]
-          create_primary_key_for_view name, options[:primary_key]
+          
+          if options[:primary_key]
+            create_primary_key_for_view name, options[:primary_key]
+          end
         end
       end
 

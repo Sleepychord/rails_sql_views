@@ -27,4 +27,14 @@ class Test::Unit::TestCase
       v.column :address_id
     end
   end
+  def create_or_replace_people_view
+    ActiveRecord::Base.connection.create_or_replace_view(:v_people,
+        'select id, first_name, last_name, ssn, address_id from people') do |v|
+      v.column :id
+      v.column :f_name
+      v.column :l_name
+      v.column :social_security
+      v.column :address_id
+    end
+  end
 end
