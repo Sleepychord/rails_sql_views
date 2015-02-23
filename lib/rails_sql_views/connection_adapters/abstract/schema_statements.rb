@@ -38,6 +38,10 @@ module RailsSqlViews
       # [<tt>:check_option</tt>]
       #   Specify restrictions for inserts or updates in updatable views. ANSI SQL 92 defines two check option
       #   values: CASCADED and LOCAL. See your database documentation for allowed values.
+      # [<tt>:force</tt>]
+      #   If true, explicitly drop the view before running the create query
+      # [<tt>:primary_key</tt>]
+      #   If present, create a primary key for the view using this value
       def create_view(name, select_query, options={})
         if supports_views?
           view_definition = ViewDefinition.new(self, select_query)
@@ -60,10 +64,42 @@ module RailsSqlViews
           create_sql << "AS #{view_definition.select_query}"
           create_sql << " WITH #{options[:check_option]} CHECK OPTION" if options[:check_option]
           execute create_sql
-        end
 
-        if options[:primary_key]
-          create_primary_key_for_view name, options[:primary_key]
+          if options[:primary_key]
+            create_primary_key_for_view name, options[:primary_key]
+          end
+        end
+      end
+      
+      # Create or replace a view.
+      # The +options+ hash can include the following keys:
+      # [<tt>:check_option</tt>]
+      #   Specify restrictions for inserts or updates in updatable views. ANSI SQL 92 defines two check option
+      #   values: CASCADED and LOCAL. See your database documentation for allowed values.
+      # [<tt>:primary_key</tt>]
+      #   If present, create a primary key for the view using this value
+      def create_or_replace_view(name, select_query, options={})
+        if supports_views? && replaces_views?
+          view_definition = ViewDefinition.new(self, select_query)
+          
+          if block_given?
+            yield view_definition
+          end
+
+          create_sql = "CREATE OR REPLACE VIEW "
+          create_sql << "#{quote_table_name(name)} "
+          if supports_view_columns_definition? && !view_definition.to_sql.blank?
+            create_sql << "("
+            create_sql << view_definition.to_sql
+            create_sql << ") " 
+          end
+          create_sql << "AS #{view_definition.select_query}"
+          create_sql << " WITH #{options[:check_option]} CHECK OPTION" if options[:check_option]
+          execute create_sql
+          
+          if options[:primary_key]
+            create_primary_key_for_view name, options[:primary_key]
+          end
         end
       end
 

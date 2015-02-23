@@ -5,6 +5,10 @@ module RailsSqlViews
           record(:create_view, args)
         end   
 
+        def create_or_replace_view(*args)
+          record(:create_or_replace_view, args)
+        end   
+
         def create_materialized_view(*args)
           record(:create_materialized_view, args)
         end  

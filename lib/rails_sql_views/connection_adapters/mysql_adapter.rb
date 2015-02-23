@@ -12,6 +12,11 @@ module RailsSqlViews
         true
       end
       
+      # Returns true as this adapter supports replacing views.
+      def replaces_views?
+        true
+      end
+      
       def base_tables(name = nil) #:nodoc:
         tables = []
         execute("SHOW FULL TABLES WHERE TABLE_TYPE='BASE TABLE'").each{|row| tables << row[0]}

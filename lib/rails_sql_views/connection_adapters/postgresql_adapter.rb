@@ -9,6 +9,11 @@ module RailsSqlViews
         true
       end
       
+      # Returns true as this adapter supports replacing views.
+      def replaces_views?
+        true
+      end
+      
       def tables_with_views_included(name = nil)
         q = <<-SQL
         SELECT table_name, table_type

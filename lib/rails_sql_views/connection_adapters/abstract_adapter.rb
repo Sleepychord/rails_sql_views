@@ -14,6 +14,11 @@ module RailsSqlViews
       def supports_views?
         return false
       end
+      
+      # Subclasses should override and return true if they support replacing views.
+      def replaces_views?
+        return false
+      end
 
       def disable_referential_integrity_with_views_excluded(&block)
         self.class.send(:alias_method, :original_tables_method, :tables)
