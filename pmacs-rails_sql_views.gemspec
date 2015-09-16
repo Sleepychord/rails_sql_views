@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "pmacs-rails_sql_views"
-  s.version = "0.10.0"
+  s.version = "0.10.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Charles Treatman", "Anthony Eden", "Greg Barendt", "Raj Iyengar", "Elika Molayi"]
@@ -34,6 +34,7 @@ Gem::Specification.new do |s|
     "lib/rails_sql_views/connection_adapters/oracleenhanced_adapter.rb.orig",
     "lib/rails_sql_views/connection_adapters/postgresql_adapter.rb",
     "lib/rails_sql_views/connection_adapters/postgresql_adapter.rb.orig",
+    "lib/rails_sql_views/connection_adapters/sqlite3_adapter.rb",
     "lib/rails_sql_views/connection_adapters/sqlite_adapter.rb",
     "lib/rails_sql_views/connection_adapters/sqlserver_adapter.rb",
     "lib/rails_sql_views/migration/command_recorder.rb",

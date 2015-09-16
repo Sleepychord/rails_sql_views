@@ -1,2 +1,5 @@
+0.10.1
+ * Add support for SQLite3Adapter
+
 0.10.0
  * Add `create_or_replace_view` method
